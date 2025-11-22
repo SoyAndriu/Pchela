@@ -1,9 +1,10 @@
-cat > .gitignore << EOL
 # ------------------------------------
-# 1. Entorno Virtual (¡Crucial!)
+# 1. Entorno Virtual
 # ------------------------------------
 env/
 venv/
+ENV/
+.venv/
 *.pydevproject
 .metadata
 .gradle
@@ -14,20 +15,84 @@ venv/
 # 2. Archivos de Python y Compilados
 # ------------------------------------
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
 # ------------------------------------
-# 3. Datos de Base de Datos y Seguridad
+# 3. Base de Datos y Seguridad
 # ------------------------------------
 *.sqlite3
 db.sqlite3
 settings_local.py
 .env
+.env.local
+.env.*.local
 
 # ------------------------------------
-# 4. Archivos de Sistema Operativo
+# 4. Archivos de Django
+# ------------------------------------
+media/
+staticfiles/
+*.log
+local_settings.py
+
+# ------------------------------------
+# 5. Archivos de Sistema Operativo
 # ------------------------------------
 .DS_Store
 Thumbs.db
-EOL
+desktop.ini
+
+# ------------------------------------
+# 6. Cobertura de Tests
+# ------------------------------------
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# ------------------------------------
+# 7. Jupyter Notebook
+# ------------------------------------
+.ipynb_checkpoints
+
+# ------------------------------------
+# 8. Celery
+# ------------------------------------
+celerybeat-schedule
+celerybeat.pid
+
+# ------------------------------------
+# 9. Otros
+# ------------------------------------
+*.bak
+*.swp
+*~

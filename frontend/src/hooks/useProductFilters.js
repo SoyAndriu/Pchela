@@ -10,6 +10,7 @@ import { PAGE_SIZE } from '../config/productConfig';
  * @returns {Object} Estados y funciones para filtrado y paginación
  */
 export const useProductFilters = (productos) => {
+  
   const { categories } = useCategories();
   // ESTADOS DE FILTROS
   const [searchTerm, setSearchTerm] = useState("");

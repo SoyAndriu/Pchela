@@ -6,12 +6,14 @@ from rest_framework import viewsets, status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import parsers
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Producto
 from lotes.models import Lote
 from lotes.serializers import LoteSerializer
 from .serializers import ProductoSerializer
 from .serializers import UserSerializer
 from .serializers import EmpleadoCreateSerializer, EmpleadoSerializer
+from .serializers import CustomTokenObtainPairSerializer
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import EmpleadoProfile
@@ -20,6 +22,12 @@ from rest_framework.views import APIView
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+
+
+# Vista personalizada para el login con validación de grupos
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
 
 # Create your views here.
 

@@ -11,10 +11,37 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import random
 import string
 import random
 import string
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+# Serializer personalizado para el login que valida grupos
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        
+        # Verificar si el usuario tiene al menos un grupo asignado
+        user = self.user
+        if not user.groups.exists():
+            raise serializers.ValidationError({
+                "detail": "No tienes permisos para acceder al sistema."
+            })
+        
+        # Agregar información adicional al response
+        data['user'] = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.groups.first().name if user.groups.exists() else None
+        }
+        
+        return data
 
 
 
@@ -200,35 +227,6 @@ class EmpleadoCreateSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        nombre = validated_data.get('nombre')
-        apellido = validated_data.get('apellido')
-        email = validated_data.pop('email')
-        password = validated_data.pop('password', None)
-        role = validated_data.pop('role')
-        base_username = f"{nombre}.{apellido}".lower().replace(' ', '')
-        username = base_username
-        i = 1
-        while User.objects.filter(username=username).exists():
-            username = f"{base_username}{i}"
-            i += 1
-        if not password:
-            password = self.generate_password()
-        # Validar email antes de crear usuario (por si el método no se llama automáticamente)
-        if EmpleadoProfile.objects.filter(email=email).exists() or User.objects.filter(email=email).exists():
-            raise serializers.ValidationError({"email": "El email ya está registrado para otro empleado o usuario."})
-        with transaction.atomic():
-            user = User.objects.create_user(username=username, email=email, password=password)
-            # Forzar must_change_password en el perfil del usuario
-            if hasattr(user, 'profile'):
-                user.profile.must_change_password = True
-                user.profile.save()
-            if role:
-                group, _ = Group.objects.get_or_create(name=role)
-                user.groups.add(group)
-            empleado = EmpleadoProfile.objects.create(user=user, email=email, nombre=nombre, apellido=apellido, **validated_data)
-        return empleado
-        
-    def create(self, validated_data):
         nombre = validated_data.pop('nombre', None)
         apellido = validated_data.pop('apellido', None)
         email = validated_data.pop('email')
@@ -253,10 +251,25 @@ class EmpleadoCreateSerializer(serializers.ModelSerializer):
                 group, _ = Group.objects.get_or_create(name=role)
                 user.groups.add(group)
             empleado = EmpleadoProfile.objects.create(user=user, email=email, nombre=nombre, apellido=apellido, **validated_data)
+        
         # Enviar email con credenciales
         subject = 'Bienvenido a PCHELABELEN - Credenciales de acceso'
         message = f"Hola {nombre},\n\nTu usuario ha sido creado en el sistema.\n\nUsuario: {username}\nContraseña temporal: {password}\n\nPor seguridad, deberás cambiar la contraseña al iniciar sesión por primera vez.\n\nSaludos."
-        send_mail(subject, message, None, [email], fail_silently=True)
+        
+        try:
+            logger.info(f"Intentando enviar email a: {email}")
+            result = send_mail(
+                subject=subject,
+                message=message,
+                from_email=None,  # Usa DEFAULT_FROM_EMAIL de settings
+                recipient_list=[email],
+                fail_silently=False  # Cambiado a False para capturar errores
+            )
+            logger.info(f"Email enviado exitosamente a {email}. Resultado: {result}")
+        except Exception as e:
+            logger.error(f"ERROR enviando email a {email}: {type(e).__name__}: {str(e)}")
+            # No falla la creación del empleado, solo logea el error
+            
         return empleado
 
     def generate_password(self, length=10):
