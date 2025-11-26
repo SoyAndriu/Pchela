@@ -21,17 +21,35 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-# Serializer personalizado para el login que valida grupos
+# Serializer personalizado para el login que valida grupos y estado activo
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         
-        # Verificar si el usuario tiene al menos un grupo asignado
         user = self.user
+        
+        # 1. Verificar si el usuario tiene al menos un grupo asignado
         if not user.groups.exists():
             raise serializers.ValidationError({
                 "detail": "No tienes permisos para acceder al sistema."
             })
+        
+        # 2. Verificar si el usuario está activo en Django
+        if not user.is_active:
+            raise serializers.ValidationError({
+                "detail": "Tu cuenta está inactiva. Contacta al administrador."
+            })
+        
+        # 3. Verificar si el empleado asociado está activo (si existe)
+        try:
+            empleado = EmpleadoProfile.objects.get(user=user)
+            if not empleado.activo:
+                raise serializers.ValidationError({
+                    "detail": "Tu cuenta está inactiva. Contacta al administrador."
+                })
+        except EmpleadoProfile.DoesNotExist:
+            # Si no es empleado, permitir acceso (puede ser un superusuario o admin)
+            pass
         
         # Agregar información adicional al response
         data['user'] = {
@@ -177,15 +195,24 @@ class EmpleadoCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         email = validated_data.get('email', instance.email)
         role = validated_data.get('role', None)
+        activo = validated_data.get('activo', instance.activo)
+        
         # Actualizar email en User si cambió
         if email != instance.user.email:
             instance.user.email = email
             instance.user.save(update_fields=['email'])
+        
         # Actualizar grupo/rol si cambió
         if role:
             instance.user.groups.clear()
             group, _ = Group.objects.get_or_create(name=role)
             instance.user.groups.add(group)
+        
+        # Sincronizar estado activo con Django User
+        if activo != instance.activo:
+            instance.user.is_active = activo
+            instance.user.save(update_fields=['is_active'])
+        
         # Actualizar el resto de los campos (excepto email y role)
         for attr, value in validated_data.items():
             if attr not in ['email', 'role']:

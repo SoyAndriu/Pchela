@@ -232,6 +232,15 @@ class EmpleadoViewSet(viewsets.ModelViewSet):
     search_fields = ['user__username', 'user__email', 'numero_empleado']
     ordering_fields = ['user__username', 'numero_empleado']
 
+    def perform_update(self, serializer):
+        """Override para sincronizar el estado activo del usuario de Django con el empleado"""
+        empleado = serializer.save()
+        
+        # Sincronizar el estado activo del usuario de Django
+        if empleado.user:
+            empleado.user.is_active = empleado.activo
+            empleado.user.save(update_fields=['is_active'])
+
     @action(detail=True, methods=['post'], url_path='reenviar-credenciales')
     def reenviar_credenciales(self, request, pk=None):
         """Reenvía el correo de credenciales al empleado por su ID"""
