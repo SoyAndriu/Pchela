@@ -6,3 +6,4 @@ class CategoriaViewSet(viewsets.ModelViewSet):
 	queryset = Categoria.objects.all().order_by('nombre')
 	serializer_class = CategoriaSerializer
 	permission_classes = [permissions.IsAuthenticated]
+	pagination_class = None  # Desactivar paginación para devolver todas las categorías

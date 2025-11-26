@@ -6,6 +6,7 @@ class LoteViewSet(viewsets.ModelViewSet):
 	queryset = Lote.objects.select_related('producto').all()
 	serializer_class = LoteSerializer
 	permission_classes = [permissions.IsAuthenticated]
+	pagination_class = None  # Desactivar paginación para devolver todos los lotes
 	filter_backends = [filters.SearchFilter, filters.OrderingFilter]
 	search_fields = ['numero_lote', 'producto__nombre', 'proveedor']
 	ordering_fields = ['fecha_compra', 'fecha_vencimiento', 'cantidad_inicial', 'cantidad_disponible']

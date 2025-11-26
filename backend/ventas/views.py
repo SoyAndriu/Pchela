@@ -24,6 +24,7 @@ class VentaViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Crea
 				.select_related('cliente', 'empleado')
 				.prefetch_related('detalles__id_producto'))
 
+	pagination_class = None  # Desactivar paginación para devolver todas las ventas
 	filter_backends = [DjangoFilterBackend, drf_filters.SearchFilter, drf_filters.OrderingFilter]
 	filterset_class = VentaFilter
 	search_fields = ['cliente__nombre', 'cliente__apellido', 'cliente__email', 'numero', 'detalles__id_producto__nombre']

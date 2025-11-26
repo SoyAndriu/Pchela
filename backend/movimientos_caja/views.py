@@ -17,6 +17,7 @@ class CajaViewSet(viewsets.ModelViewSet):
 	queryset = Caja.objects.all().order_by('-fecha_apertura')
 	serializer_class = CajaSerializer
 	permission_classes = [IsAuthenticated]
+	pagination_class = None  # Desactivar paginación para devolver todas las cajas
 	filter_backends = [filters.SearchFilter]
 	search_fields = ['estado']
 
@@ -136,6 +137,7 @@ class MovimientoDeCajaViewSet(viewsets.ModelViewSet):
 	queryset = MovimientoDeCaja.objects.all().order_by('-created_at')
 	serializer_class = MovimientoDeCajaSerializer
 	permission_classes = [IsAuthenticated]
+	pagination_class = None  # Desactivar paginación para devolver todos los movimientos
 	filter_backends = [DjangoFilterBackend, filters.SearchFilter]
 	filterset_fields = ['caja', 'origen', 'ref_type', 'ref_id']
 	search_fields = ['origen', 'ref_type']

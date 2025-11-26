@@ -8,6 +8,7 @@ class ProveedorViewSet(viewsets.ModelViewSet):
     queryset = Proveedores.objects.all().order_by('nombre')
     serializer_class = ProveedorSerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None  # Desactivar paginación para devolver todos los proveedores
 
     def destroy(self, request, *args, **kwargs):
         from django.db.models.deletion import ProtectedError
