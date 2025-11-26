@@ -72,6 +72,7 @@ class ProductoViewSet(viewsets.ModelViewSet):
     queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None  # Desactivar paginación para devolver todos los productos
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['categoria', 'categoria_ref', 'marca']
     search_fields = ['nombre', 'categoria', 'categoria_ref__nombre', 'marca__nombre_marca']
@@ -225,6 +226,7 @@ class EmpleadoViewSet(viewsets.ModelViewSet):
             return EmpleadoSerializer
         return EmpleadoCreateSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None  # Desactivar paginación para devolver todos los empleados
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['user__email']  # Permite filtrar por email
     search_fields = ['user__username', 'user__email', 'numero_empleado']

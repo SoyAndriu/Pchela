@@ -11,6 +11,7 @@ class ClienteViewSet(viewsets.ModelViewSet):
 	queryset = Clientes.objects.all().order_by('apellido', 'nombre')
 	serializer_class = ClienteSerializer
 	permission_classes = [IsAuthenticated]
+	pagination_class = None  # Desactivar paginación para devolver todos los clientes
 	filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
 	filterset_fields = ['email', 'dni', 'activo', 'condicion_iva']
 	search_fields = ['nombre', 'apellido', 'email', 'dni']
