@@ -99,7 +99,7 @@ export default function ComprasHistorial({ darkMode }) {
   useEffect(() => { setPage(1); }, [search, marcaFiltro, proveedorFiltro, fechaDesde, fechaHasta, soloActivos, pageSize]);
 
   const exportPDF = () => {
-    const columns = ['Producto','Marca','Lote','Cant Inicial','Disponible','Costo Unit','Proveedor','Fecha'];
+    const columns = ['Producto','Marca','Lote','Cant Inicial','Disponible','Costo Unit','Proveedor','Empleado','Fecha'];
     const prodList = Array.isArray(productos) ? productos : [];
     const provList = Array.isArray(proveedores) ? proveedores : [];
     const rows = filtered.map(l => {
@@ -113,6 +113,7 @@ export default function ComprasHistorial({ darkMode }) {
           const p = provList.find(pr => pr.id === l.proveedor); if (p) proveedorNombre = p.nombre;
         }
       }
+      const empleadoNombre = l.empleado?.nombre || l.empleado?.username || '—';
       return [
         prod?.nombre || `#${prodId}`,
         marcaNombre || '—',
@@ -121,6 +122,7 @@ export default function ComprasHistorial({ darkMode }) {
         l.cantidad_disponible,
         `$${Number(l.costo_unitario).toFixed(2)}`,
         proveedorNombre || '—',
+        empleadoNombre,
         l.fecha_compra || '—'
       ];
     });
@@ -223,6 +225,7 @@ export default function ComprasHistorial({ darkMode }) {
                   <th className="py-2 px-2 text-left">Disponible</th>
                   <th className="py-2 px-2 text-left">Costo Unit.</th>
                   <th className="py-2 px-2 text-left">Proveedor</th>
+                  <th className="py-2 px-2 text-left">Empleado</th>
                   <th className="py-2 px-2 text-left">Fecha</th>
                   <th className="py-2 px-2 text-left">Acciones</th>
                 </tr>
@@ -242,6 +245,7 @@ export default function ComprasHistorial({ darkMode }) {
                   }
                   const isCerrado = Number(l.cantidad_disponible || 0) === 0;
                   const canManage = (user?.role === 'gerente');
+                  const empleadoNombre = l.empleado?.nombre || l.empleado?.username || '—';
                   return (
                     <tr key={l.id} className={darkMode ? 'border-b border-gray-700 hover:bg-gray-700/50' : 'border-b border-slate-100 hover:bg-slate-50'}>
                       <td className="py-1 px-2">{prod?.nombre || `#${prodId}`}</td>
@@ -256,6 +260,7 @@ export default function ComprasHistorial({ darkMode }) {
                       </td>
                       <td className="py-1 px-2">${Number(l.costo_unitario).toFixed(2)}</td>
                       <td className="py-1 px-2">{proveedorNombre}</td>
+                      <td className="py-1 px-2">{empleadoNombre}</td>
                       <td className="py-1 px-2 whitespace-nowrap">{l.fecha_compra || '—'}</td>
                       <td className="py-1 px-2 flex gap-2">
                         {canManage && (

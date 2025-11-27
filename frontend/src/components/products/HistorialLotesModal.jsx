@@ -76,6 +76,7 @@ export default function HistorialLotesModal({ visible, onClose, producto, darkMo
                   <th className="py-2 px-2 text-left">Costo Final</th>
                   <th className="py-2 px-2 text-left">Fecha</th>
                   <th className="py-2 px-2 text-left">Proveedor</th>
+                  <th className="py-2 px-2 text-left">Empleado</th>
                   <th className="py-2 px-2 text-left">Acciones</th>
                 </tr>
               </thead>
@@ -94,6 +95,7 @@ export default function HistorialLotesModal({ visible, onClose, producto, darkMo
                   }
                   const isCerrado = Number(l.cantidad_disponible || 0) === 0;
                   const canManage = (user?.role === 'gerente');
+                  const empleadoNombre = l.empleado?.nombre || l.empleado?.username || '—';
                   return (
                     <tr key={l.id} className={darkMode ? 'border-b border-gray-700 hover:bg-gray-700/50' : 'border-b border-slate-100 hover:bg-slate-50'}>
                       <td className="py-1 px-2 font-medium">{l.numero_lote || '—'}</td>
@@ -109,6 +111,7 @@ export default function HistorialLotesModal({ visible, onClose, producto, darkMo
                       <td className="py-1 px-2">${Number(finalCost).toFixed(2)}</td>
                       <td className="py-1 px-2 whitespace-nowrap">{l.fecha_compra}</td>
                       <td className="py-1 px-2">{proveedorNombre}</td>
+                      <td className="py-1 px-2">{empleadoNombre}</td>
                       <td className="py-1 px-2 flex gap-2">
                         {canManage && (
                           <>
