@@ -223,7 +223,7 @@ export default function Header({ darkMode, setDarkMode, user, logout, userRole =
                 }`}
               >
                 <UserIcon className="h-4 w-4 mr-1" />
-                <span className="text-gray-700 font-semibold">{userRole}:</span>
+                <span className={`font-semibold ${darkMode ? "text-gray-200" : "text-gray-700"}`}>{userRole}:</span>
                 <b
                   className={
                     darkMode ? "text-pink-300" : "text-pink-600"
