@@ -188,7 +188,6 @@ export default function Reportes({ darkMode }) {
             >
               <option value="all">Todos</option>
               <option value="cash">Efectivo</option>
-              <option value="card">Tarjeta</option>
               <option value="transfer">Transferencia</option>
             </select>
           </div>

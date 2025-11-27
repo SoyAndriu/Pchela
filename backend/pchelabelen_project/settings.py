@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'proveedores',
     'tipo_movimientos',
     'tipo_pago',
+    'configuracion',
     'core.apps.CoreConfig',
     'rest_framework',
     'corsheaders',
