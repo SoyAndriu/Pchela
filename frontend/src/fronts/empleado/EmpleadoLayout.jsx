@@ -5,8 +5,11 @@ import Dashboard from "../../pages/Dashboard";
 import Products from "../../pages/Products";
 import Ventas from "../../pages/Ventas";
 import Compras from "../../pages/Compras";
+import ComprasHistorial from "../../pages/ComprasHistorial";
 import Proveedores from "../../pages/Proveedores";
+import Clientes from "../../pages/Clientes";
 import Reportes from "../../pages/Reportes";
+import ClientesInactivos from "../../pages/ClientesInactivos";
 import { useAuth } from "../../auth/AuthContext";
 import Header from "../../components/Header";
 
@@ -37,7 +40,7 @@ export default function EmpleadoLayout() {
       {/* Contenido principal */}
       <div className="flex-1 flex flex-col">
         {/* Barra superior */}
-        <Header darkMode={darkMode} setDarkMode={setDarkMode} user={user} logout={logout} />
+        <Header darkMode={darkMode} setDarkMode={setDarkMode} user={user} logout={logout} userRole="Empleado" />
 
         <main className="p-6">
           <Routes>
@@ -45,7 +48,10 @@ export default function EmpleadoLayout() {
             <Route path="productos" element={<Products darkMode={darkMode} />} />
             <Route path="ventas" element={<Ventas darkMode={darkMode} />} />
             <Route path="compras" element={<Compras darkMode={darkMode} />} />
+            <Route path="compras/historial" element={<ComprasHistorial darkMode={darkMode} />} />
             <Route path="proveedores" element={<Proveedores darkMode={darkMode} />} />
+            <Route path="clientes" element={<Clientes darkMode={darkMode} />} />
+            <Route path="clientes-inactivos" element={<ClientesInactivos darkMode={darkMode} />} />
             <Route path="reportes" element={<Reportes darkMode={darkMode} />} />
           </Routes>
         </main>

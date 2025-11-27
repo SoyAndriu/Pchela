@@ -46,7 +46,7 @@ export default function GerenteLayout() {
       {/* Contenido principal */}
       <div className="flex-1 flex flex-col">
         {/* Barra superior */}
-        <Header darkMode={darkMode} setDarkMode={setDarkMode} user={user} logout={logout} />
+        <Header darkMode={darkMode} setDarkMode={setDarkMode} user={user} logout={logout} userRole="Gerente" />
 
         <main className="p-6">
           <Routes>

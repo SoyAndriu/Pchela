@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { 
-  ChevronRightIcon,
   HomeIcon,
   ShoppingBagIcon,
   ChartBarIcon,
   ShoppingCartIcon,
   UsersIcon,
   DocumentTextIcon,
-  CogIcon,
   TruckIcon,
   BanknotesIcon
 } from "@heroicons/react/24/outline";
+import CajaStatusBadge from "../../components/CajaStatusBadge";
 
 
 function ModoOscuro(isActive, darkMode) {
@@ -22,16 +21,13 @@ function ModoOscuro(isActive, darkMode) {
 }
 
 export default function Sidebar({ darkMode }) {
-  // Estado para abrir/cerrar el submenú de Configuración
-  const [configOpen, setConfigOpen] = useState(false);
-
   return (
     <aside
       className={`w-64 shadow-md h-screen sticky top-0 ${
         darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
       }`}
     >
-  <div className={`p-4 font-bold border-b flex items-center ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
+      <div className={`p-4 font-bold border-b flex items-center ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
         <img src="/images/logo.png" alt="Pchéla logo" className="h-10 w-10 mr-2" />
         <div>
           <h1 className={`text-xl ${darkMode ? "text-white" : "text-pink-600"}`}>Pchéla</h1>
@@ -39,8 +35,7 @@ export default function Sidebar({ darkMode }) {
         </div>
       </div>
 
-  <nav className="p-4 space-y-2 flex flex-col h-[calc(100%-72px)]">
-        {/* Otras opciones principales */}
+      <nav className="p-4 space-y-2 flex flex-col h-[calc(100%-72px)]">
         <NavLink
           to="/empleado"
           end
@@ -69,6 +64,7 @@ export default function Sidebar({ darkMode }) {
           <ChartBarIcon className="w-5 h-5" />
           Ventas
         </NavLink>
+
         <NavLink
           to="/empleado/compras"
           className={({ isActive }) =>
@@ -78,6 +74,7 @@ export default function Sidebar({ darkMode }) {
           <ShoppingCartIcon className="w-5 h-5" />
           Compras
         </NavLink>
+
         <NavLink
           to="/empleado/proveedores"
           className={({ isActive }) =>
@@ -87,6 +84,7 @@ export default function Sidebar({ darkMode }) {
           <TruckIcon className="w-5 h-5" />
           Proveedores
         </NavLink>
+        
         <NavLink
           to="/empleado/clientes"
           className={({ isActive }) =>
@@ -96,6 +94,7 @@ export default function Sidebar({ darkMode }) {
           <UsersIcon className="w-5 h-5" />
           Clientes
         </NavLink>
+        
         <NavLink
           to="/empleado/reportes"
           className={({ isActive }) =>
@@ -106,54 +105,22 @@ export default function Sidebar({ darkMode }) {
           Reportes
         </NavLink>
 
-  {/* Configuración con submenú */}
-  <div>
-          {/* Botón que abre/cierra */}
-          <button
-            onClick={() => setConfigOpen(!configOpen)}
-            className={`w-full text-left flex items-center gap-2 p-2 rounded font-semibold transition-colors ${
-              darkMode
-                ? "hover:bg-gray-700"
-                : "hover:bg-pink-50"
-            }`}
-          >
-            <CogIcon className="w-5 h-5" />
-            <span className="flex-1 flex justify-between items-center">
-                <span>Configuración</span>
-                <ChevronRightIcon
-                    className={`h-4 w-4 transition-transform duration-300 ${
-                    configOpen ? "rotate-90" : ""
-                    }`}
-                />
-            </span>
-          </button>
-
-          {/* Subopciones visibles solo si está abierto */}
-          {configOpen && (
-            <div className={`ml-4 overflow-hidden transition-all duration-300 ${configOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}>
-              <NavLink
-                to="/empleado/config/general"
-                className={({ isActive }) =>
-                  "flex items-center gap-2 p-2 rounded text-sm transition-colors " + ModoOscuro(isActive, darkMode)
-                }
-              >
-                <CogIcon className="w-4 h-4" />
-                Otros ajustes
-              </NavLink>
-            </div>
-          )}
-        </div>
         {/* Spacer to push Caja button to bottom */}
         <div className="flex-1" />
+        
         {/* Botón Caja al fondo del sidebar */}
         <NavLink
           to="/cajero"
           className={({ isActive }) =>
-            "mt-2 flex items-center gap-2 p-2 rounded transition-colors " + ModoOscuro(isActive, darkMode)
+            `mt-2 flex items-center gap-1 p-3 h-12 rounded-lg text-lg shadow-md border transition-colors ${
+              darkMode ? "border-gray-600" : "border-gray-300"
+            } ` + ModoOscuro(isActive, darkMode)
           }
         >
-          <BanknotesIcon className="w-5 h-5" />
-          Caja
+          <BanknotesIcon className="w-6 h-6 mr-2" />
+          <span className="font-semibold">Caja</span>
+          <span className="flex-1" />
+          <CajaStatusBadge compact darkMode={darkMode} className="ml-4" />
         </NavLink>
       </nav>
     </aside>

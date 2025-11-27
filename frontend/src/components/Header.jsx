@@ -16,7 +16,7 @@ import {
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function Header({ darkMode, setDarkMode, user, logout }) {
+export default function Header({ darkMode, setDarkMode, user, logout, userRole = "Usuario" }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const notifRef = useRef();
   const [online, setOnline] = useState(true);
@@ -223,7 +223,7 @@ export default function Header({ darkMode, setDarkMode, user, logout }) {
                 }`}
               >
                 <UserIcon className="h-4 w-4 mr-1" />
-                <span className="text-gray-700 font-semibold">Gerente:</span>
+                <span className="text-gray-700 font-semibold">{userRole}:</span>
                 <b
                   className={
                     darkMode ? "text-pink-300" : "text-pink-600"
