@@ -159,7 +159,11 @@ export default function Reportes({ darkMode }) {
         <div className="flex flex-wrap gap-2 items-center">
           <div className={`flex items-center gap-2 px-3 py-2 rounded border text-sm ${darkMode ? "border-gray-600 bg-gray-800" : "border-slate-300 bg-white"}`}>
             <FunnelIcon className="w-4 h-4" />
-            <select className={`bg-transparent focus:outline-none text-sm ${darkMode ? "text-gray-200" : "text-slate-700"}`} value={filterMode} onChange={(e) => setFilterMode(e.target.value)}>
+            <select 
+              className={`focus:outline-none text-sm ${darkMode ? "bg-gray-800 text-gray-200" : "bg-white text-slate-700"}`} 
+              value={filterMode} 
+              onChange={(e) => setFilterMode(e.target.value)}
+            >
               <option value="7d">7 días</option>
               <option value="30d">30 días</option>
               <option value="90d">90 días</option>
@@ -177,7 +181,11 @@ export default function Reportes({ darkMode }) {
           )}
           <div className={`flex items-center gap-2 px-3 py-2 rounded border text-sm ${darkMode ? "border-gray-600 bg-gray-800" : "border-slate-300 bg-white"}`}>
             <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-slate-700'}`}>Medio:</span>
-            <select className={`bg-transparent focus:outline-none text-sm ${darkMode ? "text-gray-200" : "text-slate-700"}`} value={medioPago} onChange={(e) => setMedioPago(e.target.value)}>
+            <select 
+              className={`focus:outline-none text-sm ${darkMode ? "bg-gray-800 text-gray-200" : "bg-white text-slate-700"}`} 
+              value={medioPago} 
+              onChange={(e) => setMedioPago(e.target.value)}
+            >
               <option value="all">Todos</option>
               <option value="cash">Efectivo</option>
               <option value="card">Tarjeta</option>

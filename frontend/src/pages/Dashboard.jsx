@@ -19,12 +19,20 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGri
 
 const fmtMoney = (n) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(Number(n || 0));
 
-export default function Dashboard() {
-  const [darkMode, setDarkMode] = useState(false);
+export default function Dashboard({ darkMode }) {
+  const [darkModeInternal, setDarkModeInternal] = useState(false);
+  
+  // Sincronizar con prop darkMode si viene del layout
   useEffect(() => {
-    const hasDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
-    setDarkMode(!!hasDark);
-  }, []);
+    if (darkMode !== undefined) {
+      setDarkModeInternal(darkMode);
+    } else {
+      const hasDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+      setDarkModeInternal(!!hasDark);
+    }
+  }, [darkMode]);
+  
+  const effectiveDarkMode = darkMode !== undefined ? darkMode : darkModeInternal;
 
   const { productos, fetchProducts } = useProducts();
   const { items: clientes, fetchAll: fetchClientes } = useClientes();
@@ -225,7 +233,7 @@ export default function Dashboard() {
     { title: "Stock bajo", value: productosStockBajo, Icon: ExclamationTriangleIcon, onClick: () => navigate('/gerente/productos?stock=bajo', { state: { stockFilter: 'bajo' } }) },
   ];
 
-  const cardBase = `p-4 rounded-lg shadow-sm border ${darkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900 border-slate-200"}`;
+  const cardBase = `p-4 rounded-lg shadow-sm border ${effectiveDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900 border-slate-200"}`;
 
   // Dimensiones reactivas para gráficos según cantidad de puntos
   const chartDims = useMemo(() => {
@@ -269,14 +277,14 @@ export default function Dashboard() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-slate-800"}`}>Panel General</h2>
-        <p className={`${darkMode ? "text-gray-300" : "text-slate-600"}`}>Resumen del sistema</p>
+        <h2 className={`text-2xl font-bold ${effectiveDarkMode ? "text-white" : "text-slate-800"}`}>Panel General</h2>
+        <p className={`${effectiveDarkMode ? "text-gray-300" : "text-slate-600"}`}>Resumen del sistema</p>
       </div>
 
-      <div className={`p-4 rounded-lg shadow-sm border mb-4 ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-slate-200"}`}>
+      <div className={`p-4 rounded-lg shadow-sm border mb-4 ${effectiveDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-slate-200"}`}>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`text-sm ${darkMode ? "text-gray-300" : "text-slate-600"}`}>Rango:</span>
+            <span className={`text-sm ${effectiveDarkMode ? "text-gray-300" : "text-slate-600"}`}>Rango:</span>
             <div className="flex items-center gap-1">
               {[
                 { k: "today", label: "Hoy" },
@@ -289,8 +297,8 @@ export default function Dashboard() {
                   onClick={() => setFilterMode(k)}
                   className={`px-3 py-1.5 rounded text-sm border transition-colors ${
                     filterMode === k
-                      ? (darkMode ? "bg-pink-600 text-white border-pink-600" : "bg-pink-500 text-white border-pink-500")
-                      : (darkMode ? "bg-gray-700 text-gray-200 border-gray-600 hover:bg-gray-600" : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50")
+                      ? (effectiveDarkMode ? "bg-pink-600 text-white border-pink-600" : "bg-pink-500 text-white border-pink-500")
+                      : (effectiveDarkMode ? "bg-gray-700 text-gray-200 border-gray-600 hover:bg-gray-600" : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50")
                   }`}
                 >
                   {label}
@@ -306,14 +314,14 @@ export default function Dashboard() {
                 type="date"
                 value={customStart}
                 onChange={(e) => setCustomStart(e.target.value)}
-                className={`px-2 py-1.5 rounded border text-sm ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-slate-300 text-slate-800"}`}
+                className={`px-2 py-1.5 rounded border text-sm ${effectiveDarkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-slate-300 text-slate-800"}`}
               />
               <label className="text-sm">Hasta</label>
               <input
                 type="date"
                 value={customEnd}
                 onChange={(e) => setCustomEnd(e.target.value)}
-                className={`px-2 py-1.5 rounded border text-sm ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-slate-300 text-slate-800"}`}
+                className={`px-2 py-1.5 rounded border text-sm ${effectiveDarkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-slate-300 text-slate-800"}`}
               />
             </div>
           )}
@@ -324,7 +332,7 @@ export default function Dashboard() {
 
       {loading && <div className={`${cardBase}`}>Cargando datos…</div>}
       {error && !loading && (
-        <div className={`${cardBase} border-red-400 ${darkMode ? "text-red-300" : "text-red-700"}`}>
+        <div className={`${cardBase} border-red-400 ${effectiveDarkMode ? "text-red-300" : "text-red-700"}`}>
           <div className="flex items-center gap-2">
             <ExclamationTriangleIcon className="w-5 h-5" />
             <span>{error}</span>
@@ -336,16 +344,16 @@ export default function Dashboard() {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             {tiles.map((s, i) => (
-              <StatCard key={i} {...s} darkMode={darkMode} />
+              <StatCard key={i} {...s} effectiveDarkMode={effectiveDarkMode} />
             ))}
           </div>
 
           <div className={`${cardBase} mb-6`}>
             <div>
-              <p className={`text-sm ${darkMode ? "text-gray-300" : "text-slate-600"}`}>Estado de caja</p>
+              <p className={`text-sm ${effectiveDarkMode ? "text-gray-300" : "text-slate-600"}`}>Estado de caja</p>
               <p
                 className={`text-xl font-semibold ${
-                  cajaAbierta ? (darkMode ? "text-green-400" : "text-green-700") : (darkMode ? "text-red-300" : "text-red-600")
+                  cajaAbierta ? (effectiveDarkMode ? "text-green-400" : "text-green-700") : (effectiveDarkMode ? "text-red-300" : "text-red-600")
                 }`}
               >
                 {cajaAbierta == null ? "—" : cajaAbierta ? "Abierta" : "Cerrada"}
@@ -371,7 +379,7 @@ export default function Dashboard() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className={`${darkMode ? "text-gray-300" : "text-slate-600"}`}
+                    className={`${effectiveDarkMode ? "text-gray-300" : "text-slate-600"}`}
                   >
                     Sin datos en el rango
                   </motion.p>
@@ -387,24 +395,24 @@ export default function Dashboard() {
                   >
                     <ResponsiveContainer width="100%" height={chartDims.height}>
                       <BarChart data={seriesDiasForChart} margin={{ top: 8, right: 8, bottom: 8, left: 8 }} barCategoryGap={barTuning.gap} barGap={0} maxBarSize={barTuning.maxBarSize}>
-                        <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? "#374151" : "#e5e7eb"} />
+                        <CartesianGrid strokeDasharray="3 3" stroke={effectiveDarkMode ? "#374151" : "#e5e7eb"} />
                         <XAxis
                           dataKey="date"
                           tickFormatter={xTickFormatter}
-                          stroke={darkMode ? "#d1d5db" : "#374151"}
+                          stroke={effectiveDarkMode ? "#d1d5db" : "#374151"}
                           fontSize={12}
                           angle={-30}
                           textAnchor="end"
                           height={40}
                           interval={barTuning.interval}
                         />
-                        <YAxis tickFormatter={(v) => `${Math.round(v/1000)}k`} stroke={darkMode ? "#d1d5db" : "#374151"} fontSize={12} />
+                        <YAxis tickFormatter={(v) => `${Math.round(v/1000)}k`} stroke={effectiveDarkMode ? "#d1d5db" : "#374151"} fontSize={12} />
                         <Tooltip
                           formatter={(value) => fmtMoney(value)}
                           labelFormatter={tooltipLabel}
-                          contentStyle={{ background: darkMode ? '#111827' : '#ffffff', borderColor: darkMode ? '#374151' : '#e5e7eb', color: darkMode ? '#e5e7eb' : '#111827' }}
+                          contentStyle={{ background: effectiveDarkMode ? '#111827' : '#ffffff', borderColor: effectiveDarkMode ? '#374151' : '#e5e7eb', color: effectiveDarkMode ? '#e5e7eb' : '#111827' }}
                         />
-                        <Bar dataKey="total" fill={darkMode ? "#ec4899" : "#db2777"} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={350} />
+                        <Bar dataKey="total" fill={effectiveDarkMode ? "#ec4899" : "#db2777"} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={350} />
                       </BarChart>
                     </ResponsiveContainer>
                   </motion.div>
@@ -415,16 +423,16 @@ export default function Dashboard() {
           <div className={`${cardBase}`}>
             <h3 className="text-lg font-semibold mb-3">Top productos (rango)</h3>
             {topProductosRango.length === 0 ? (
-              <p className={`${darkMode ? "text-gray-300" : "text-slate-600"}`}>Aún sin datos del rango</p>
+              <p className={`${effectiveDarkMode ? "text-gray-300" : "text-slate-600"}`}>Aún sin datos del rango</p>
             ) : (
               <div className="w-full" style={{ height: Math.max(200, 80 + topProductosRango.length * 36) }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={[...topProductosRango].reverse()} layout="vertical" margin={{ top: 8, right: 16, bottom: 8, left: 8 }}>
-                    <CartesianGrid horizontal={false} strokeDasharray="3 3" stroke={darkMode ? "#374151" : "#e5e7eb"} />
-                    <XAxis type="number" tickFormatter={(v) => fmtMoney(v)} stroke={darkMode ? "#d1d5db" : "#374151"} fontSize={12} />
-                    <YAxis type="category" dataKey="nombre" width={140} stroke={darkMode ? "#d1d5db" : "#374151"} fontSize={12} />
-                    <Tooltip formatter={(value) => fmtMoney(value)} contentStyle={{ background: darkMode ? '#111827' : '#ffffff', borderColor: darkMode ? '#374151' : '#e5e7eb', color: darkMode ? '#e5e7eb' : '#111827' }} />
-                    <Bar dataKey="total" fill={darkMode ? "#ec4899" : "#db2777"} radius={[0, 4, 4, 0]} />
+                    <CartesianGrid horizontal={false} strokeDasharray="3 3" stroke={effectiveDarkMode ? "#374151" : "#e5e7eb"} />
+                    <XAxis type="number" tickFormatter={(v) => fmtMoney(v)} stroke={effectiveDarkMode ? "#d1d5db" : "#374151"} fontSize={12} />
+                    <YAxis type="category" dataKey="nombre" width={140} stroke={effectiveDarkMode ? "#d1d5db" : "#374151"} fontSize={12} />
+                    <Tooltip formatter={(value) => fmtMoney(value)} contentStyle={{ background: effectiveDarkMode ? '#111827' : '#ffffff', borderColor: effectiveDarkMode ? '#374151' : '#e5e7eb', color: effectiveDarkMode ? '#e5e7eb' : '#111827' }} />
+                    <Bar dataKey="total" fill={effectiveDarkMode ? "#ec4899" : "#db2777"} radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -435,14 +443,14 @@ export default function Dashboard() {
           <div className={`${cardBase}`}>
             <h3 className="text-lg font-semibold mb-3">Últimas ventas</h3>
             {ultimasVentas.length === 0 ? (
-              <p className={`${darkMode ? "text-gray-300" : "text-slate-600"}`}>Sin ventas recientes</p>
+              <p className={`${effectiveDarkMode ? "text-gray-300" : "text-slate-600"}`}>Sin ventas recientes</p>
             ) : (
               <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                 {ultimasVentas.map((v, i) => (
                   <li key={i} className="py-2 flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium">{v.cliente}</p>
-                      <p className={`text-xs ${darkMode ? "text-gray-400" : "text-slate-500"}`}>
+                      <p className={`text-xs ${effectiveDarkMode ? "text-gray-400" : "text-slate-500"}`}>
                         {v.date} {v.time} • {v.paymentMethod}
                       </p>
                     </div>
@@ -460,13 +468,13 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ title, value, Icon, darkMode, onClick }) {
+function StatCard({ title, value, Icon, effectiveDarkMode, onClick }) {
   const clickable = typeof onClick === 'function';
   return (
     <div
       className={`p-4 rounded-lg shadow-sm border transition ${
-        darkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900 border-slate-200"
-      } ${clickable ? (darkMode ? 'hover:bg-gray-750 cursor-pointer' : 'hover:bg-slate-50 cursor-pointer') : ''}`}
+        effectiveDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900 border-slate-200"
+      } ${clickable ? (effectiveDarkMode ? 'hover:bg-gray-750 cursor-pointer' : 'hover:bg-slate-50 cursor-pointer') : ''}`}
       onClick={onClick}
       role={clickable ? 'button' : undefined}
       tabIndex={clickable ? 0 : undefined}
@@ -474,7 +482,7 @@ function StatCard({ title, value, Icon, darkMode, onClick }) {
     >
       <div className="flex items-center justify-between">
         <div>
-          <p className={`text-sm ${darkMode ? "text-gray-300" : "text-slate-600"}`}>{title}</p>
+          <p className={`text-sm ${effectiveDarkMode ? "text-gray-300" : "text-slate-600"}`}>{title}</p>
           <p className="text-xl font-semibold">{value}</p>
         </div>
         {Icon && <Icon className="w-7 h-7 opacity-80" />}
