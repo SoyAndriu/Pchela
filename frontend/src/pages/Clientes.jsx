@@ -81,13 +81,7 @@ export default function Clientes({ darkMode }) {
     }
   };
 
-  if (showInactivos) {
-    return (
-      <ClientesInactivos darkMode={darkMode} onBack={() => setShowInactivos(false)} />
-    );
-  }
-
-  // Filtrado y paginado
+  // Filtrado y paginado - HOOKS PRIMERO
   const filtered = useMemo(() => {
     const list = Array.isArray(items) ? items.filter((c) => c.activo) : [];
     if (!searchTerm) return list;
@@ -107,6 +101,13 @@ export default function Clientes({ darkMode }) {
   }, [filtered, page, pageSize]);
 
   useEffect(() => { setPage(1); }, [searchTerm, pageSize]);
+
+  // RETURN CONDICIONAL AL FINAL
+  if (showInactivos) {
+    return (
+      <ClientesInactivos darkMode={darkMode} onBack={() => setShowInactivos(false)} />
+    );
+  }
 
   return (
     <div

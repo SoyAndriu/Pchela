@@ -146,6 +146,15 @@ export default function Sidebar({ darkMode }) {
                 Empleados
               </NavLink>
               <NavLink
+                to="/gerente/config/permisos"
+                className={({ isActive }) =>
+                  "flex items-center gap-2 p-2 rounded text-sm transition-colors " + ModoOscuro(isActive, darkMode)
+                }
+              >
+                <CogIcon className="w-4 h-4" />
+                Permisos
+              </NavLink>
+              <NavLink
                 to="/gerente/config/general"
                 className={({ isActive }) =>
                   "flex items-center gap-2 p-2 rounded text-sm transition-colors " + ModoOscuro(isActive, darkMode)

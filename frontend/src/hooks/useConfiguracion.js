@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { apiFetch } from '../utils/productUtils';
 
-const API_URL = 'http://localhost:8000/api/configuracion';
+const API_URL = 'http://127.0.0.1:8000/api/configuracion';
 
 export const useConfiguracion = () => {
   const [loading, setLoading] = useState(false);

@@ -239,7 +239,7 @@ export default function Dashboard({ darkMode }) {
   const chartDims = useMemo(() => {
     const n = Array.isArray(seriesDias) ? seriesDias.length : 0;
     // Altura base 220px, crece 8px por barra, sin tope superior para ocupar el espacio necesario
-    const height = Math.max(220, 180 + n * 8);
+    const height = Math.max(240, 180 + n * 8);
     return { height };
   }, [seriesDias]);
 
@@ -391,9 +391,9 @@ export default function Dashboard({ darkMode }) {
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.25 }}
                     className="w-full"
-                    style={{ height: chartDims.height }}
+                    style={{ height: chartDims.height, minHeight: 240 }}
                   >
-                    <ResponsiveContainer width="100%" height={chartDims.height}>
+                    <ResponsiveContainer width="100%" height={chartDims.height} minHeight={240}>
                       <BarChart data={seriesDiasForChart} margin={{ top: 8, right: 8, bottom: 8, left: 8 }} barCategoryGap={barTuning.gap} barGap={0} maxBarSize={barTuning.maxBarSize}>
                         <CartesianGrid strokeDasharray="3 3" stroke={effectiveDarkMode ? "#374151" : "#e5e7eb"} />
                         <XAxis
@@ -425,8 +425,8 @@ export default function Dashboard({ darkMode }) {
             {topProductosRango.length === 0 ? (
               <p className={`${effectiveDarkMode ? "text-gray-300" : "text-slate-600"}`}>Aún sin datos del rango</p>
             ) : (
-              <div className="w-full" style={{ height: Math.max(200, 80 + topProductosRango.length * 36) }}>
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="w-full" style={{ height: Math.max(200, 80 + topProductosRango.length * 36), minHeight: 200 }}>
+                <ResponsiveContainer width="100%" height={Math.max(200, 80 + topProductosRango.length * 36)}>
                   <BarChart data={[...topProductosRango].reverse()} layout="vertical" margin={{ top: 8, right: 16, bottom: 8, left: 8 }}>
                     <CartesianGrid horizontal={false} strokeDasharray="3 3" stroke={effectiveDarkMode ? "#374151" : "#e5e7eb"} />
                     <XAxis type="number" tickFormatter={(v) => fmtMoney(v)} stroke={effectiveDarkMode ? "#d1d5db" : "#374151"} fontSize={12} />

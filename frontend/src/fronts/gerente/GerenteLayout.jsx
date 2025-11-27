@@ -13,6 +13,7 @@ import EmpleadosInactivos from "../../pages/EmpleadosInactivos";
 import Clientes from "../../pages/Clientes";
 import Reportes from "../../pages/Reportes";
 import GeneralConfig from "../../pages/ConfiguracionGeneral";
+import PermisosEmpleados from "../../pages/PermisosEmpleados";
 import ClientesInactivos from "../../pages/ClientesInactivos";
 import { useAuth } from "../../auth/AuthContext";
 import Header from "../../components/Header";
@@ -62,6 +63,7 @@ export default function GerenteLayout() {
             {/* Ruta de usuarios eliminada */}
             <Route path="config/empleados" element={<Empleados darkMode={darkMode} />} />
             <Route path="config/empleados-inactivos" element={<EmpleadosInactivos darkMode={darkMode} />} />
+            <Route path="config/permisos" element={<PermisosEmpleados darkMode={darkMode} />} />
             <Route path="config/general" element={<GeneralConfig darkMode={darkMode} />} />
           </Routes>
         </main>

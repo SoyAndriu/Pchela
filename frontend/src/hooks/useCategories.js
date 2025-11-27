@@ -82,7 +82,17 @@ const useCategories = () => {
             const response = await apiFetch(`${API_BASE}/categorias/${id}/`, { method: 'DELETE' });
 
             if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+                // Intentar extraer el mensaje de error del JSON
+                let errorMessage = `Error ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    if (errorData.detail) {
+                        errorMessage = errorData.detail;
+                    }
+                } catch (e) {
+                    // Si no se puede parsear el JSON, usar el mensaje por defecto
+                }
+                throw new Error(errorMessage);
             }
 
             // Actualizar la lista local

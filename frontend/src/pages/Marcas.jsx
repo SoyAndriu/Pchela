@@ -29,7 +29,12 @@ export default function Marcas({ darkMode, onBack }) {
     setModalVisible(true);
   };
   const handleDelete = async (id) => {
-    if (window.confirm("¿Eliminar marca?")) await deleteMarca(id);
+    if (!window.confirm("¿Eliminar marca?")) return;
+    try {
+      await deleteMarca(id);
+    } catch (err) {
+      alert(err.message || 'Error al eliminar la marca');
+    }
   };
 
   const handleSave = async (form) => {

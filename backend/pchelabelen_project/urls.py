@@ -43,6 +43,7 @@ urlpatterns = [
     path('', include('core.urls')),
     path('', include('compras.urls')),
     path('api/configuracion/', include('configuracion.urls')),
+    path('api/', include('permisos.urls')),
 ]
 
 if settings.DEBUG:

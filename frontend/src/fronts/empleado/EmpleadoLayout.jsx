@@ -10,8 +10,10 @@ import Proveedores from "../../pages/Proveedores";
 import Clientes from "../../pages/Clientes";
 import Reportes from "../../pages/Reportes";
 import ClientesInactivos from "../../pages/ClientesInactivos";
+import SinAcceso from "../../pages/SinAcceso";
 import { useAuth } from "../../auth/AuthContext";
 import Header from "../../components/Header";
+import ProtectedRoute from "../../components/ProtectedRoute";
 
 export default function EmpleadoLayout() {
   const [darkMode, setDarkMode] = useState(false);
@@ -45,14 +47,80 @@ export default function EmpleadoLayout() {
         <main className="p-6">
           <Routes>
             <Route index element={<Dashboard darkMode={darkMode} />} />
-            <Route path="productos" element={<Products darkMode={darkMode} />} />
-            <Route path="ventas" element={<Ventas darkMode={darkMode} />} />
-            <Route path="compras" element={<Compras darkMode={darkMode} />} />
-            <Route path="compras/historial" element={<ComprasHistorial darkMode={darkMode} />} />
-            <Route path="proveedores" element={<Proveedores darkMode={darkMode} />} />
-            <Route path="clientes" element={<Clientes darkMode={darkMode} />} />
-            <Route path="clientes-inactivos" element={<ClientesInactivos darkMode={darkMode} />} />
-            <Route path="reportes" element={<Reportes darkMode={darkMode} />} />
+            
+            <Route 
+              path="productos" 
+              element={
+                <ProtectedRoute requiredPermission="puede_productos">
+                  <Products darkMode={darkMode} />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="ventas" 
+              element={
+                <ProtectedRoute requiredPermission="puede_ventas">
+                  <Ventas darkMode={darkMode} />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="compras" 
+              element={
+                <ProtectedRoute requiredPermission="puede_compras">
+                  <Compras darkMode={darkMode} />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="compras/historial" 
+              element={
+                <ProtectedRoute requiredPermission="puede_compras">
+                  <ComprasHistorial darkMode={darkMode} />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="proveedores" 
+              element={
+                <ProtectedRoute requiredPermission="puede_proveedores">
+                  <Proveedores darkMode={darkMode} />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="clientes" 
+              element={
+                <ProtectedRoute requiredPermission="puede_clientes">
+                  <Clientes darkMode={darkMode} />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="clientes-inactivos" 
+              element={
+                <ProtectedRoute requiredPermission="puede_clientes">
+                  <ClientesInactivos darkMode={darkMode} />
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="reportes" 
+              element={
+                <ProtectedRoute requiredPermission="puede_reportes">
+                  <Reportes darkMode={darkMode} />
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route path="sin-acceso" element={<SinAcceso darkMode={darkMode} />} />
           </Routes>
         </main>
       </div>

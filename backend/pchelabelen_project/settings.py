@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'tipo_movimientos',
     'tipo_pago',
     'configuracion',
+    'permisos',
     'core.apps.CoreConfig',
     'rest_framework',
     'corsheaders',
