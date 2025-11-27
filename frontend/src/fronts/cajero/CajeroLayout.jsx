@@ -13,6 +13,7 @@ import {
   SunIcon,
   MoonIcon,
   PowerIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import CajaGuard from "../../components/CajaGuard";
 import CajaStatusBadge from "../../components/CajaStatusBadge";
@@ -120,9 +121,32 @@ export default function CajeroLayout() {
         }`}>
           <h1 className="text-lg font-semibold">Panel de Cajero</h1>
           <div className="flex items-center gap-4">
+            {user && (
+              <>
+                {/* Tarjeta usuario */}
+                <span
+                  className={`flex items-center gap-2 text-sm px-3 py-1 rounded-lg shadow-sm border font-medium transition-colors ${
+                    darkMode
+                      ? "bg-gray-700 border-gray-600 text-pink-200"
+                      : "bg-pink-50 border-pink-200 text-pink-700"
+                  }`}
+                >
+                  <UserIcon className="h-4 w-4 mr-1" />
+                  <span className={darkMode ? "text-gray-300" : "text-gray-700"}>Cajero:</span>
+                  <b
+                    className={
+                      darkMode ? "text-pink-300" : "text-pink-600"
+                    }
+                  >
+                    {user?.name || user?.username || ""}
+                  </b>
+                </span>
+              </>
+            )}
+
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className="flex items-center gap-2 px-3 py-1 rounded bg-gray-300 text-black hover:bg-gray-400 transition-colors"
+              className="flex items-center gap-2 px-3 py-1 rounded-lg border-2 shadow-sm transition-all duration-200 bg-white text-gray-900 border-black hover:bg-gray-100"
             >
               {darkMode ? (
                 <>
@@ -136,24 +160,22 @@ export default function CajeroLayout() {
                 </>
               )}
             </button>
-            <div className="flex items-center gap-3">
-              {user ? (
-                <>
-                  <span className="text-sm text-gray-600">
-                    Rol: <b>{user.role}</b>
-                  </span>
-                  <button
-                    onClick={logout}
-                    className="flex items-center gap-2 rounded-lg px-3 py-1 border bg-gray-100 hover:bg-gray-200 transition-colors"
-                  >
-                    <PowerIcon className="h-4 w-4" />
-                    <span>Cerrar sesión</span>
-                  </button>
-                </>
-              ) : (
-                <span className="text-sm text-gray-500">No logueado</span>
-              )}
-            </div>
+            
+            {user ? (
+              <button
+                onClick={logout}
+                className={`flex items-center gap-2 rounded-lg px-3 py-1 border-2 shadow-sm transition-all duration-200 ${
+                  darkMode
+                    ? "border-gray-600 bg-gray-700 hover:bg-gray-600 text-white"
+                    : "border-pink-400 bg-pink-50 hover:bg-pink-100 text-pink-700"
+                }`}
+              >
+                <PowerIcon className="h-4 w-4" />
+                Cerrar sesión
+              </button>
+            ) : (
+              <span className="text-sm text-gray-500">No logueado</span>
+            )}
           </div>
         </header>
 
