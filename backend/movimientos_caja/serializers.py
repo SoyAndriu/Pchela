@@ -4,6 +4,17 @@ from tipo_movimientos.models import TipoMovimiento
 from tipo_pago.models import TipoPago
 
 
+class CajaEventSerializer(serializers.Serializer):
+    """Serializer para eventos de apertura/cierre de caja"""
+    id = serializers.IntegerField()
+    tipo = serializers.CharField()  # 'apertura' o 'cierre'
+    fecha = serializers.DateTimeField()
+    empleado_nombre = serializers.CharField()
+    monto = serializers.DecimalField(max_digits=10, decimal_places=2)
+    descripcion = serializers.CharField()
+    numero_caja = serializers.CharField()
+
+
 class CajaSerializer(serializers.ModelSerializer):
     saldo_actual = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     saldo_total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
@@ -22,6 +33,8 @@ class CajaSerializer(serializers.ModelSerializer):
 
 class MovimientoDeCajaSerializer(serializers.ModelSerializer):
     id_tipo_pago_nombre = serializers.SerializerMethodField(read_only=True)
+    empleado_nombre = serializers.SerializerMethodField(read_only=True)
+    medio_pago_display = serializers.SerializerMethodField(read_only=True)
     afecta_caja = serializers.SerializerMethodField(read_only=True)
     # Campos de usabilidad (Opción A): aceptar strings en creación
     tipo_movimiento = serializers.CharField(write_only=True, required=False)
@@ -40,7 +53,8 @@ class MovimientoDeCajaSerializer(serializers.ModelSerializer):
         model = MovimientoDeCaja
         fields = [
             'id', 'caja', 'fecha_movimiento', 'hora', 'created_at', 'monto', 'descripcion',
-            'empleado', 'created_by', 'id_tipo_movimiento', 'id_tipo_pago', 'id_tipo_pago_nombre',
+            'empleado', 'empleado_nombre', 'created_by', 'id_tipo_movimiento', 'id_tipo_pago', 
+            'id_tipo_pago_nombre', 'medio_pago_display',
             'tipo', 'origen', 'ref_type', 'ref_id', 'ajuste_sign', 'status', 'reversed_of', 'reversado_por',
             'afecta_caja', 'tipo_movimiento', 'medio_pago', 'tipoMovimiento', 'medioPago', 'refType', 'refId'
         ]
@@ -54,6 +68,20 @@ class MovimientoDeCajaSerializer(serializers.ModelSerializer):
     def get_id_tipo_pago_nombre(self, obj):
         try:
             return obj.id_tipo_pago.nombre_tipo_pago.upper() if obj.id_tipo_pago else None
+        except Exception:
+            return None
+
+    def get_empleado_nombre(self, obj):
+        try:
+            if obj.empleado:
+                return f"{obj.empleado.nombre} {obj.empleado.apellido}".strip()
+            return None
+        except Exception:
+            return None
+    
+    def get_medio_pago_display(self, obj):
+        try:
+            return obj.id_tipo_pago.nombre_tipo_pago if obj.id_tipo_pago else None
         except Exception:
             return None
 

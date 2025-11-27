@@ -5,9 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.utils import timezone
 from django.db import transaction
+from itertools import chain
+from operator import attrgetter
 
 from .models import Caja, MovimientoDeCaja
-from .serializers import CajaSerializer, MovimientoDeCajaSerializer
+from .serializers import CajaSerializer, MovimientoDeCajaSerializer, CajaEventSerializer
 from core.models import EmpleadoProfile
 from tipo_movimientos.models import TipoMovimiento
 from tipo_pago.models import TipoPago
@@ -286,4 +288,79 @@ class MovimientoDeCajaViewSet(viewsets.ModelViewSet):
 		original.reversado_por = reverso
 		original.save()
 		return Response(MovimientoDeCajaSerializer(reverso).data, status=201)
+
+	@action(detail=False, methods=['get'])
+	def historial_completo(self, request):
+		"""
+		Endpoint que devuelve todos los movimientos de caja + eventos de apertura/cierre
+		ordenados cronológicamente
+		"""
+		from django.utils.dateparse import parse_datetime
+		
+		# Obtener todos los movimientos normales
+		movimientos_list = list(MovimientoDeCaja.objects.all().select_related('caja', 'empleado', 'id_tipo_pago'))
+		movimientos_data = MovimientoDeCajaSerializer(movimientos_list, many=True).data
+
+		# Crear eventos de apertura/cierre desde las cajas
+		eventos = []
+		for caja in Caja.objects.all().select_related('empleado_apertura', 'empleado_cierre'):
+			# Evento de apertura
+			if caja.fecha_apertura:
+				apertura_nombre = ""
+				if caja.empleado_apertura:
+					apertura_nombre = f"{caja.empleado_apertura.nombre} {caja.empleado_apertura.apellido}".strip()
+				eventos.append({
+					'id': f'apertura_{caja.id}',
+					'tipo': 'APERTURA',
+					'fecha': caja.fecha_apertura.isoformat() if hasattr(caja.fecha_apertura, 'isoformat') else str(caja.fecha_apertura),
+					'empleado_nombre': apertura_nombre,
+					'monto': float(caja.monto_inicial),
+					'descripcion': f'Apertura de caja #{caja.pk}',
+					'numero_caja': str(caja.pk),
+					'es_evento_caja': True,
+					'caja_id': caja.id
+				})
+			
+			# Evento de cierre
+			if caja.fecha_cierre:
+				cierre_nombre = ""
+				if caja.empleado_cierre:
+					cierre_nombre = f"{caja.empleado_cierre.nombre} {caja.empleado_cierre.apellido}".strip()
+				eventos.append({
+					'id': f'cierre_{caja.id}',
+					'tipo': 'CIERRE',
+					'fecha': caja.fecha_cierre.isoformat() if hasattr(caja.fecha_cierre, 'isoformat') else str(caja.fecha_cierre),
+					'empleado_nombre': cierre_nombre,
+					'monto': float(caja.closing_counted_amount) if caja.closing_counted_amount else 0,
+					'descripcion': f'Cierre de caja #{caja.pk}',
+					'numero_caja': str(caja.pk),
+					'es_evento_caja': True,
+					'caja_id': caja.id,
+					'diferencia': float(caja.difference_amount) if caja.difference_amount else 0
+				})
+		
+		# Combinar movimientos con eventos, marcando cada tipo
+		for mov in movimientos_data:
+			mov['es_evento_caja'] = False
+			# Usar created_at como fecha para ordenar (ya viene como string del serializer)
+			if 'created_at' in mov and not mov.get('fecha'):
+				mov['fecha'] = mov['created_at']
+		
+		todos = list(movimientos_data) + eventos
+		
+		# Ordenar por fecha descendente (más reciente primero)
+		# Usamos una función que maneja tanto strings como datetime
+		def get_sort_key(item):
+			fecha = item.get('fecha', '')
+			if isinstance(fecha, str):
+				# Intentar parsear el string a datetime para comparar
+				try:
+					return parse_datetime(fecha) or timezone.now()
+				except:
+					return timezone.now()
+			return fecha
+		
+		todos.sort(key=get_sort_key, reverse=True)
+		
+		return Response(todos)
 

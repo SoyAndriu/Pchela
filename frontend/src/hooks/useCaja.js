@@ -295,6 +295,25 @@ export default function useCaja() {
     return res.json();
   }, []);
 
+  const getHistorialCompleto = useCallback(async () => {
+    const res = await apiFetch(`${API_BASE}/caja-movimientos/historial_completo/`);
+    if (!res.ok) {
+      let msg = "Error obteniendo historial completo";
+      try {
+        const ct = res.headers.get("content-type") || "";
+        if (ct.includes("application/json")) {
+          const err = await res.json();
+          msg = err?.detail || err?.message || err?.error || msg;
+        } else {
+          const text = await res.text();
+          if (DEBUG_CAJA && text) console.error("Caja getHistorialCompleto:", text.slice(0, 500));
+        }
+  } catch { /* ignore parse error */ }
+      throw new Error(`[${res.status}] ${msg}`);
+    }
+    return res.json();
+  }, []);
+
   return {
     getSesionAbierta,
     abrirCaja,
@@ -302,5 +321,6 @@ export default function useCaja() {
     getMovimientos,
     crearMovimiento,
     reversarMovimiento,
+    getHistorialCompleto,
   };
 }

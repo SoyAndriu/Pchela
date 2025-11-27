@@ -4,10 +4,12 @@ import { useAuth } from "../../auth/AuthContext";
 import PaymentForm from "./PaymentForm";
 import SalesHistory from "./SalesHistory";
 import Caja from "./Caja";
+import MovimientosCaja from "./MovimientosCaja";
 import {
   CreditCardIcon,
   ChartBarIcon,
   BanknotesIcon,
+  ClipboardDocumentListIcon,
   SunIcon,
   MoonIcon,
   PowerIcon,
@@ -64,7 +66,20 @@ export default function CajeroLayout() {
             }
           >
             <ChartBarIcon className="h-5 w-5" />
-            Historial
+            Historial Ventas
+          </NavLink>
+          <NavLink 
+            to="/cajero/movimientos"
+            className={({ isActive }) => 
+              `flex items-center gap-2 p-2 rounded transition-colors ${
+                isActive 
+                  ? "bg-blue-600 text-white" 
+                  : "hover:bg-gray-700"
+              }`
+            }
+          >
+            <ClipboardDocumentListIcon className="h-5 w-5" />
+            Movimientos Caja
           </NavLink>
           <NavLink 
             to="/cajero/caja"
@@ -145,13 +160,14 @@ export default function CajeroLayout() {
         {/* Main content con guardia de Caja */}
         <CajaGuard
           darkMode={darkMode}
-          allowedWhenClosed={["/cajero/caja", "/cajero/history"]}
+          allowedWhenClosed={["/cajero/caja", "/cajero/history", "/cajero/movimientos"]}
         >
           <main className="flex-1 p-6">
             <Routes>
               <Route index element={<Navigate to="payment" replace />} />
               <Route path="/payment" element={<PaymentForm darkMode={darkMode} />} />
               <Route path="/history" element={<SalesHistory darkMode={darkMode} />} />
+              <Route path="/movimientos" element={<MovimientosCaja darkMode={darkMode} />} />
               <Route path="/caja" element={<Caja darkMode={darkMode} />} />
             </Routes>
           </main>
