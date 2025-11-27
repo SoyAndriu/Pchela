@@ -19,7 +19,7 @@ const ProductPagination = ({
   darkMode 
 }) => {
   return (
-    <div className="flex items-center justify-between mt-6 text-sm">
+    <div className="flex items-center justify-between mt-6 mb-4 text-sm">
       {/* Información de resultados */}
       <span className={`${darkMode ? "text-gray-400" : "text-gray-600"}`}>
         {totalItems} resultados • Página {currentPage} de {totalPages}

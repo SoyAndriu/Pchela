@@ -115,12 +115,38 @@ class ProductoViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         """Eliminar producto"""
+        from django.db.models.deletion import ProtectedError
+        
         instance = self.get_object()
         producto_nombre = instance.nombre
-        instance.delete()
-        return Response({
-            'message': f'Producto "{producto_nombre}" eliminado exitosamente'
-        }, status=status.HTTP_200_OK)
+        
+        try:
+            instance.delete()
+            return Response({
+                'message': f'Producto "{producto_nombre}" eliminado exitosamente'
+            }, status=status.HTTP_200_OK)
+        except ProtectedError as e:
+            # Analizar qué referencias impiden la eliminación
+            referencias = []
+            protected_objects = e.protected_objects
+            
+            # Contar referencias por tipo
+            detalles_venta = sum(1 for obj in protected_objects if obj.__class__.__name__ == 'DetalleVenta')
+            detalles_compra = sum(1 for obj in protected_objects if obj.__class__.__name__ == 'DetalleCompra')
+            lotes = sum(1 for obj in protected_objects if obj.__class__.__name__ == 'Lote')
+            
+            if detalles_venta > 0:
+                referencias.append(f"{detalles_venta} venta(s)")
+            if detalles_compra > 0:
+                referencias.append(f"{detalles_compra} compra(s)")
+            if lotes > 0:
+                referencias.append(f"{lotes} lote(s)")
+            
+            mensaje = f'No se puede eliminar el producto "{producto_nombre}" porque está vinculado a: {", ".join(referencias)}.'
+            
+            return Response({
+                'detail': mensaje
+            }, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['get'])
     def categorias(self, request):

@@ -115,7 +115,21 @@ export const useProducts = () => {
       // Hacer petición DELETE al backend
       const res = await apiFetch(`${API_BASE}/productos/${id}/`, { method: "DELETE" });
       
-      if (!res.ok) throw new Error("Error eliminando el producto");
+      if (!res.ok) {
+        // Intentar extraer el mensaje de error del JSON
+        let errorMessage = "Error eliminando el producto";
+        try {
+          const errorData = await res.json();
+          if (errorData.detail) {
+            errorMessage = errorData.detail;
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (e) {
+          // Si no se puede parsear el JSON, usar el mensaje por defecto
+        }
+        throw new Error(errorMessage);
+      }
       
       // Actualizar la lista local removiendo el producto eliminado
       setProductos((prev) => prev.filter((p) => p.id !== id));

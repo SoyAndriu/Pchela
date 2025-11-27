@@ -157,8 +157,9 @@ export default function Products({ darkMode }) {
   const handleDeleteProduct = async (id) => {
     try {
       await deleteProduct(id);
-    } catch {
-      toast.error('Error eliminando el producto');
+      toast.success('Producto eliminado correctamente');
+    } catch (err) {
+      toast.error(err.message || 'Error eliminando el producto');
     }
   };
 
@@ -173,7 +174,7 @@ export default function Products({ darkMode }) {
   }
 
   return (
-    <div className={`p-6 min-h-screen ${darkMode ? "bg-gray-900" : "bg-pink-25"}`}>
+    <div className={`p-6 pb-24 min-h-screen ${darkMode ? "bg-gray-900" : "bg-pink-25"}`}>
       {/* Estadísticas de productos con botón de categorías */}
       <ProductStats 
         productos={productos} 
